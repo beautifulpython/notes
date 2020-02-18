@@ -1,1 +1,1 @@
-# notes
+# uesful code notes
