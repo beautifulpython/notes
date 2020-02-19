@@ -34,3 +34,8 @@ docker run -ti cmp:1604 bash
 ```bash
 . /opt/conda/etc/profile.d/conda.sh
 ```
+
+### create conda env and install gdal=3.0.4
+```bash
+conda create -n gdal-dev -c conda-forge gdal=3.0.4
+```
