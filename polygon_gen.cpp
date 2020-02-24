@@ -19,11 +19,11 @@ int main(int argc, char* argv[]) {
         for(int i=0;i<(int)points.size();++i) points[i] = dist(mt);
         std::cout << idx << "\tPOLYGON (("
                   << std::fixed
-                  << points[0] << " " << points[1] << ","
-                  << points[2] << " " << points[3] << ","
-                  << points[4] << " " << points[5] << ","
-                  << points[6] << " " << points[7] << ","
-                  << points[0] << " " << points[1] << "))" << std::endl;
+                  << points[0]-2 << " " << points[1]-2 << ","
+                  << points[2]-2 << " " << points[3]+2 << ","
+                  << points[4]+2 << " " << points[5]+2 << ","
+                  << points[6]+2 << " " << points[7]-2 << ","
+                  << points[0]-2 << " " << points[1]-2 << "))" << std::endl;
     }
     return 0;
 }
