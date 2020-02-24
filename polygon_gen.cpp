@@ -14,10 +14,10 @@ int main(int argc, char* argv[]) {
     std::uniform_real_distribution<double> dist(-1,1);
 
     std::vector<double> points(8);
-    std::cout << "num \t polygon" << std::endl;
+    std::cout << "num\tpolygon" << std::endl;
     for(int64_t idx=0; idx<num_rows; ++idx){
         for(int i=0;i<(int)points.size();++i) points[i] = dist(mt);
-        std::cout << idx << " \t POLYGON (("
+        std::cout << idx << "\tPOLYGON (("
                   << std::fixed
                   << points[0] << " " << points[1] << ","
                   << points[2] << " " << points[3] << ","
