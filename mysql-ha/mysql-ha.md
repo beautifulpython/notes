@@ -60,7 +60,7 @@ e48a7a9528ac        mysql/mysql-server:5.7   "/entrypoint.sh --se…"   6 second
 ```
 
 ----
-在`node1` 上执行一下命令，启动`MySql Group Replication`
+在`node1` 上执行以下命令，启动`MySql Group Replication`
 ```bash
 docker exec -it node1 mysql -uroot -pmypass \
   -e "SET @@GLOBAL.group_replication_bootstrap_group=1;" \
@@ -84,7 +84,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 
 ```
 
-在 `node2` 和 `node3`上执行一下命令
+在 `node2` 和 `node3`上执行以下命令
 ```bash
 docker exec -it node2 mysql -uroot -pmypass \
   -e "change master to master_user='repl' for channel 'group_replication_recovery';" \
@@ -318,7 +318,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
 
 ----
-`node3`重新加入啊集群
+`node3`重新加入集群
 ```bash
 docker exec -it node3 mysql -uroot -pmypass -e "STOP GROUP_REPLICATION; START GROUP_REPLICATION;"
 
