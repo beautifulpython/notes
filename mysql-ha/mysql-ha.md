@@ -1,0 +1,43 @@
+# mysql 高可用
+参考文献: https://mysqlhighavailability.com/setting-up-mysql-group-replication-with-mysql-docker-images/
+
+## docker compose
+`docker-compose.yml` 内容如下
+```yml
+version: '3'
+services:
+    node1:
+        image: mysql/mysql-server:5.7
+        hostname: node1
+        networks:
+            - mysql-group
+        volumes:
+            - /mnt/db1:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=mypass
+        command: --server-id=1 --log-bin='mysql-bin-1.log' --enforce-gtid-consistency='ON' --log-slave-updates='ON' --gtid-mode='ON' --transaction-write-set-extraction='XXHASH64' --binlog-checksum='NONE' --master-info-repository='TABLE' --relay-log-info-repository='TABLE' --plugin-load='group_replication.so' --relay-log-recovery='ON' --group-replication-start-on-boot='OFF' --group-replication-group-name='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' --group-replication-local-address="node1:33061" --group-replication-group-seeds='node1:33061,node2:33061,node3:33061' --loose-group-replication-single-primary-mode='OFF' --loose-group-replication-enforce-update-everywhere-checks='ON'
+    node2:
+        image: mysql/mysql-server:5.7
+        hostname: node2
+        networks:
+            - mysql-group
+        volumes:
+            - /mnt/db1:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=mypass
+        command: --server-id=2 --log-bin='mysql-bin-1.log' --enforce-gtid-consistency='ON' --log-slave-updates='ON' --gtid-mode='ON' --transaction-write-set-extraction='XXHASH64' --binlog-checksum='NONE' --master-info-repository='TABLE' --relay-log-info-repository='TABLE' --plugin-load='group_replication.so' --relay-log-recovery='ON' --group-replication-start-on-boot='OFF' --group-replication-group-name='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' --group-replication-local-address="node2:33061" --group-replication-group-seeds='node1:33061,node2:33061,node3:33061' --loose-group-replication-single-primary-mode='OFF' --loose-group-replication-enforce-update-everywhere-checks='ON'
+    node3:
+        image: mysql/mysql-server:5.7
+        hostname: node3
+        networks:
+            - mysql-group
+        volumes:
+            - /mnt/db1:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=mypass
+        command: --server-id=3 --log-bin='mysql-bin-1.log' --enforce-gtid-consistency='ON' --log-slave-updates='ON' --gtid-mode='ON' --transaction-write-set-extraction='XXHASH64' --binlog-checksum='NONE' --master-info-repository='TABLE' --relay-log-info-repository='TABLE' --plugin-load='group_replication.so' --relay-log-recovery='ON' --group-replication-start-on-boot='OFF' --group-replication-group-name='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' --group-replication-local-address="node3:33061" --group-replication-group-seeds='node1:33061,node2:33061,node3:33061' --loose-group-replication-single-primary-mode='OFF' --loose-group-replication-enforce-update-everywhere-checks='ON'
+
+networks:
+    mysql-group:
+```
+当前 `mysql`集群包含3个几点，采用多主节点方式启动

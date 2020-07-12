@@ -1,0 +1,41 @@
+version: '3'
+services:
+    machine-1:
+        image: quay.io/coreos/etcd:v3.4.9
+        command: etcd --data-dir=data.etcd --name machine-1 --initial-advertise-peer-urls http://172.20.0.101:2380 --listen-peer-urls http://172.20.0.101:2380 --advertise-client-urls http://172.20.0.101:2379 --listen-client-urls http://172.20.0.101:2379 --initial-cluster machine-1=http://172.20.0.101:2380,machine-2=http://172.20.0.102:2380,machine-3=http://172.20.0.103:2380 --initial-cluster-state new --initial-cluster-token etcd-token-01
+        networks:
+            etcd-net:
+                ipv4_address: 172.20.0.101
+
+    machine-2:
+        image: quay.io/coreos/etcd:v3.4.9
+        command: etcd --data-dir=data.etcd --name machine-2 --initial-advertise-peer-urls http://172.20.0.102:2380 --listen-peer-urls http://172.20.0.102:2380 --advertise-client-urls http://172.20.0.102:2379 --listen-client-urls http://172.20.0.102:2379 --initial-cluster machine-1=http://172.20.0.101:2380,machine-2=http://172.20.0.102:2380,machine-3=http://172.20.0.103:2380 --initial-cluster-state new --initial-cluster-token etcd-token-01
+        networks:
+            etcd-net:
+                ipv4_address: 172.20.0.102
+
+    machine-3:
+        image: quay.io/coreos/etcd:v3.4.9
+        command: etcd --data-dir=data.etcd --name machine-3 --initial-advertise-peer-urls http://172.20.0.103:2380 --listen-peer-urls http://172.20.0.103:2380 --advertise-client-urls http://172.20.0.103:2379 --listen-client-urls http://172.20.0.103:2379 --initial-cluster machine-1=http://172.20.0.101:2380,machine-2=http://172.20.0.102:2380,machine-3=http://172.20.0.103:2380 --initial-cluster-state new --initial-cluster-token etcd-token-01
+        networks:
+            etcd-net:
+                ipv4_address: 172.20.0.103
+
+    client:
+        image: quay.io/coreos/etcd:v3.4.9
+        environment:
+            - ETCDCTL_API=3
+            - ENDPOINTS=172.20.0.101:2379,172.20.0.102:2379,172.20.0.103:2379
+        command: sh
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        networks:
+            etcd-net:
+                ipv4_address: 172.20.0.100
+                  
+networks:
+    etcd-net:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.20.0.0/24
