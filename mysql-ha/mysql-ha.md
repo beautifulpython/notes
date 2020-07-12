@@ -594,7 +594,10 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
 
 ----
-关闭集群
+关闭集群，并删除数据
 ```bash
+docker stop node1
+docker rm node1
 docker-compose down
+sudo rm -rf /mnt/db1 /mnt/db2 /mnt/db3
 ```
