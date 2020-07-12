@@ -506,11 +506,15 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 ----
 `node1`重新加入集群
 ```bash
-docker exec -it node1 mysql -uroot -pmypass -e "STOP GROUP_REPLICATION; START GROUP_REPLICATION;"
+docker exec -it node1 mysql -uroot -pmypass \
+  -e "change master to master_user='repl' for channel 'group_replication_recovery';" \
+  -e "START GROUP_REPLICATION;"
 
 ```
 
-立刻查询集群状态
+----
+
+查询集群状态
 ```bash
 for N in 1 2 3
 do
@@ -519,7 +523,8 @@ docker exec -it node$N mysql -uroot -pmypass \
     -e "SELECT * FROM performance_schema.replication_group_members;"
 done
 ```
-输出如下信息，表示 `node1` 节点在恢复的过程中
+
+输出如下信息
 ```bash
 mysql: [Warning] Using a password on the command line interface can be insecure.
 +---------------+-------+
@@ -530,7 +535,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
 | CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
-| group_replication_applier | 064d9fe0-c446-11ea-b329-0242c0a8a004 | node1       |        3306 | RECOVERING   |
+| group_replication_applier | 9e8df6a8-c448-11ea-88ff-0242c0a8a004 | node1       |        3306 | ONLINE       |
 | group_replication_applier | fbdd6128-c444-11ea-a8a2-0242c0a8a002 | node2       |        3306 | ONLINE       |
 | group_replication_applier | fd20487f-c444-11ea-a9e1-0242c0a8a003 | node3       |        3306 | ONLINE       |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
@@ -543,7 +548,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
 | CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
-| group_replication_applier | 064d9fe0-c446-11ea-b329-0242c0a8a004 | node1       |        3306 | RECOVERING   |
+| group_replication_applier | 9e8df6a8-c448-11ea-88ff-0242c0a8a004 | node1       |        3306 | ONLINE       |
 | group_replication_applier | fbdd6128-c444-11ea-a8a2-0242c0a8a002 | node2       |        3306 | ONLINE       |
 | group_replication_applier | fd20487f-c444-11ea-a9e1-0242c0a8a003 | node3       |        3306 | ONLINE       |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
@@ -556,10 +561,35 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
 | CHANNEL_NAME              | MEMBER_ID                            | MEMBER_HOST | MEMBER_PORT | MEMBER_STATE |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
-| group_replication_applier | 064d9fe0-c446-11ea-b329-0242c0a8a004 | node1       |        3306 | RECOVERING   |
+| group_replication_applier | 9e8df6a8-c448-11ea-88ff-0242c0a8a004 | node1       |        3306 | ONLINE       |
 | group_replication_applier | fbdd6128-c444-11ea-a8a2-0242c0a8a002 | node2       |        3306 | ONLINE       |
 | group_replication_applier | fd20487f-c444-11ea-a9e1-0242c0a8a003 | node3       |        3306 | ONLINE       |
 +---------------------------+--------------------------------------+-------------+-------------+--------------+
+
+```
+
+----
+从`node1`查询数据
+```bash
+docker exec -it node1 mysql -uroot -pmypass \
+  -e "SHOW VARIABLES WHERE Variable_name = 'hostname';" \
+  -e "SELECT * FROM TEST.t1;"
+```
+输出如下信息
+```bash
+mysql: [Warning] Using a password on the command line interface can be insecure.
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| hostname      | node1 |
++---------------+-------+
++----+
+| id |
++----+
+|  1 |
+|  2 |
+|  3 |
++----+
 
 ```
 
