@@ -1,7 +1,7 @@
 # mysql 高可用
 参考文献: https://mysqlhighavailability.com/setting-up-mysql-group-replication-with-mysql-docker-images/
 
-## docker compose
+----
 `docker-compose.yml` 内容如下
 ```yml
 version: '3'
